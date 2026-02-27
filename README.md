@@ -1,17 +1,19 @@
-# Jiushuyun Agent Service (Docker)
+# 🐳 Jiushuyun Agent Docker (九数云本地宝容器化)
 
-本项目用于将 **九数云 (Jiushuyun) 本地宝** 代理服务容器化。通过 GitHub Actions 实现每日定时构建，确保镜像环境的安全与更新，并自动推送到 GitHub Container Registry (GHCR)。
+本项目致力于将 **九数云 (Jiushuyun) 本地宝** 代理服务容器化。通过 GitHub Actions 实现每日定时构建，确保镜像环境的安全与及时更新。
 
 ## 🚀 快速开始
 
-### 1. 镜像地址
+### 1. 拉取镜像
+
 ```bash
 docker pull ghcr.io/awsl1110/jiushuyun-docker:latest
+
 ```
 
 ### 2. 使用 Docker Compose 部署
 
-在服务器上创建目录并编写 `docker-compose.yml`：
+创建目录并编写 `docker-compose.yml`。建议使用 `host` 网络模式以确保本地数据库连接的稳定性。
 
 ```yaml
 services:
@@ -21,8 +23,8 @@ services:
     restart: always
     network_mode: "host"
     volumes:
-      - /jiushuyun/config:/opt/jiushuyun/config  # 配置文件持久化
-      - /jiushuyun/data:/mnt/data                # 数据目录
+      - ./config:/opt/jiushuyun/config  # 配置文件映射
+      - ./data:/mnt/data                # 本地待上传数据目录
     deploy:
       resources:
         limits:
@@ -31,5 +33,21 @@ services:
 
 ---
 
-## 📂 目录结构
-/opt/jiushuyun该目录为九数云本地宝服务的安装根目录，包含了程序运行的核心二进制文件、依赖库及环境配置。
+## 📂 目录结构说明
+
+| 路径 | 说明 |
+| --- | --- |
+| `/opt/jiushuyun` | **程序根目录**：包含核心二进制文件、依赖库及环境配置。 |
+| `/opt/jiushuyun/config` | **配置目录**：建议挂载至宿主机，防止重启后认证失效。 |
+| `/mnt/data` | **数据映射区**：用于存放需要九数云读取的本地文件。 |
+
+---
+
+**官方文档参考**：
+关于本地宝的具体业务配置、数据库连接指引，请参考 [九数云官方帮助文档](https://help.fanruan.com/jiushuyun/doc-view-645.html)。
+
+---
+
+## ⚖️ 免责声明
+
+本项目仅提供容器化封装方案，相关软件权利归属 **帆软软件有限公司 (Fanruan)**。请在遵守官方授权协议的前提下使用。
